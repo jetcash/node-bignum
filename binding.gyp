@@ -12,85 +12,85 @@
         # Currently set up to use with the following OpenSSL distro:
         #
         # http://slproweb.com/products/Win32OpenSSL.html
-        [
-          'OS=="win"', {
-            'conditions': [
-              [
-                'target_arch=="x64"', {
-                  'variables': {
-                    'openssl_root%': 'C:/OpenSSL-Win64'
-                  },
-                }, {
-                   'variables': {
-                     'openssl_root%': 'C:/OpenSSL-Win32'
-                    }
-                }
-              ]
-            ],
-            'libraries': [ 
-              '-l<(openssl_root)/lib/libeay32.lib',
-            ],
-            'include_dirs': [
-              '<(openssl_root)/include',
-            ],
-          },
-
-          # Otherwise, if not Windows, link against the exposed OpenSSL
-          # in Node.
-          {
-            'conditions': [
-              [
-                'target_arch=="ia32"', {
-                  'variables': {
-                    'openssl_config_path': '<(nodedir)/deps/openssl/config/piii'
-                  }
-                }
-              ],
-              [
-                'target_arch=="x64"', {
-                  'variables': {
-                    'openssl_config_path': '<(nodedir)/deps/openssl/config/k8'
-                  },
-                }
-              ],
-              [
-                'target_arch=="arm"', {
-                  'variables': {
-                    'openssl_config_path': '<(nodedir)/deps/openssl/config/arm'
-                  }
-                }
-              ],
-              [
-                'target_arch=="arm64"', {
-                  'variables': {
-                    'openssl_config_path': '<(nodedir)/deps/openssl/config/aarch64'
-                  }
+        ['OS=="win"', {
+          'conditions': [
+            [
+              'target_arch=="x64"', {
+                'variables': {
+                  'openssl_root%': 'C:/OpenSSL-Win64'
                 },
-              ],
-              [
-                'target_arch=="ppc64"', {
-                  'variables': {
-                    'openssl_config_path': '<(nodedir)/deps/openssl/config/powerpc64'
+              }, {
+                 'variables': {
+                   'openssl_root%': 'C:/OpenSSL-Win32'
                   }
-                },
-              ]
-            ],
-            'include_dirs': [
-              "<(nodedir)/deps/openssl/openssl/include",
-              "<(openssl_config_path)"
+              }
             ]
-          }
-        ]
-      ]
-    }, {
-      'target_name': 'action_after_build',
-      'type': 'none',
-      'dependencies': [ '<(module_name)' ],
-      'copies': [
+          ],
+          'libraries': [ 
+            '-l<(openssl_root)/lib/libeay32.lib',
+          ],
+          'include_dirs': [
+            '<(openssl_root)/include',
+          ],
+        },
+
+        # Otherwise, if not Windows, link against the exposed OpenSSL
+        # in Node.
         {
-          'files': [ '<(PRODUCT_DIR)/<(module_name).node' ],
-          'destination': '<(module_path)'
-        }
+          'conditions': [
+            [
+              'target_arch=="ia32"', {
+                'variables': {
+                  'openssl_config_path': '<(nodedir)/deps/openssl/config/piii'
+                }
+              }
+            ],
+            [
+              'target_arch=="x64"', {
+                'variables': {
+                  'openssl_config_path': '<(nodedir)/deps/openssl/config/k8'
+                },
+              }
+            ],
+            [
+              'target_arch=="arm"', {
+                'variables': {
+                  'openssl_config_path': '<(nodedir)/deps/openssl/config/arm'
+                }
+              }
+            ],
+            [
+              'target_arch=="arm64"', {
+                'variables': {
+                  'openssl_config_path': '<(nodedir)/deps/openssl/config/aarch64'
+                }
+              },
+            ],
+            [
+              'target_arch=="ppc64"', {
+                'variables': {
+                  'openssl_config_path': '<(nodedir)/deps/openssl/config/powerpc64'
+                }
+              },
+            ]
+          ],
+          'include_dirs': [
+            "<(nodedir)/deps/openssl/openssl/include",
+            "<(openssl_config_path)"
+          ]
+        }],
+        ['OS=="mac"', {
+          'OTHER_LDFLAGS': [ "-stdlib=libc++" ],
+            'link_settings': {
+              "libraries": ["-liconv"],
+            },
+            'xcode_settings': {
+                'MACOSX_DEPLOYMENT_TARGET': '10.9',
+                'OTHER_CPLUSPLUSFLAGS' : [ "-std=c++11", "-stdlib=libc++" ],
+                'GCC_ENABLE_CPP_RTTI': 'YES',
+                'GCC_ENABLE_CPP_EXCEPTIONS': 'YES'
+            }
+        }]
       ]
     }
   ]
